@@ -83,6 +83,14 @@ describe ENVied do
       expect(described_class).to_not respond_to :B
     end
 
+    it 'responds to configured variables as predicates' do
+      configured_with(a: :Integer).and_ENV({'a' => '1'})
+      envied_require
+
+      expect(described_class).to respond_to :a?
+      expect(described_class.a?).to eql(true)
+    end
+
     it 'sets ENVied.config' do
       configured_with(a: :Integer).and_ENV({'a' => '1'})
       envied_require

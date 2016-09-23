@@ -79,10 +79,16 @@ MSG
   end
 
   def self.method_missing(method, *args, &block)
-    respond_to_missing?(method) ? (env && env[method.to_s]) : super
+    return super unless respond_to_missing?(method)
+    case method.to_s
+    when /\?$/
+      !env.missing?(env.variables_by_name.fetch(method.to_s.sub(/\?$/, '').to_sym))
+    else
+      env[method.to_s]
+    end
   end
 
   def self.respond_to_missing?(method, include_private = false)
-    (env && env.has_key?(method)) || super
+    (env && env.has_key?(method.to_s.sub(/\?$/, ''))) || super
   end
 end

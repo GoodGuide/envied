@@ -10,7 +10,7 @@ class ENVied
     end
 
     def missing_variables
-      variables.select(&method(:missing?))
+      variables.select {|v| groups.include?(v.group) }.select(&method(:missing?))
     end
 
     def uncoercible_variables
@@ -18,13 +18,11 @@ class ENVied
     end
 
     def variables
-      @variables ||= begin
-        config.variables.select {|v| groups.include?(v.group) }
-      end
+      config.variables
     end
 
     def variables_by_name
-      Hash[variables.map {|v| [v.name, v] }]
+      @variables_by_name ||= variables.inject({}) {|h, v| h[v.name] = v; h }
     end
 
     def [](name)
@@ -49,9 +47,13 @@ class ENVied
     end
 
     def coerce(var)
-      coerced?(var) ?
+      val = coerced?(var) ?
         value_to_coerce(var) :
         coercer.coerce(value_to_coerce(var), var.type)
+
+      val = var.custom_coercer.call(val) if var.custom_coercer.respond_to?(:call)
+
+      val
     end
 
     def coercible?(var)
@@ -59,7 +61,7 @@ class ENVied
     end
 
     def missing?(var)
-      value_to_coerce(var).nil?
+      var.required? && value_to_coerce(var).nil?
     end
 
     def coerced?(var)

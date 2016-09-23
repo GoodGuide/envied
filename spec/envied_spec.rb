@@ -122,7 +122,7 @@ describe ENVied do
       it 'raises error when configuring variable of unknown type' do
         expect {
           configured_with(A: :Fixnum)
-        }.to raise_error
+        }.to raise_error(/variable type \(of A\)/i)
       end
     end
 
@@ -200,7 +200,7 @@ describe ENVied do
 
           expect {
             envied_require
-          }.to raise_error
+          }.to raise_error(/\bA\b/)
         end
 
         it 'is ignored if ENV is provided' do
@@ -285,13 +285,13 @@ describe ENVied do
           }.to_not raise_error
         end
 
-        it 'wont define non-required variables on ENVied' do
+        it 'will define non-required variables on ENVied' do
           stub_const("ENV", {'moar' => 'yes'})
           envied_require(:default)
 
           expect {
             described_class.bar
-          }.to raise_error
+          }.not_to raise_error
         end
 
         it 'requires variables without a group when requiring the default group' do
@@ -330,7 +330,7 @@ describe ENVied do
           it 'has no default by default' do
             # fixes a bug where variables of type :Hash had a default even
             # when none was configured.
-            expect { envied_require }.to raise_error
+            expect { envied_require }.to raise_error(/\bbaz\b/)
           end
         end
       end

@@ -11,7 +11,6 @@ describe ENVied::EnvVarExtractor do
       %{self.a = ENV['A']} => %w(A),
       %{self.a = ENV["A"]} => %w(A),
       %{self.a = ENV.fetch("A")]} => %w(A),
-      %{self.a = ENV.fetch("A")]} => %w(A),
       %{# self.a = ENV["A"]} => %w(),
       %{self.a = ENV["A"] && self.b = ENV["B"]} => %w(A B),
       %{self.a = ENV["A3"]} => %w(A3)

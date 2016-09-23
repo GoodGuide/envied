@@ -95,5 +95,13 @@ describe ENVied::Coercer do
         end
       end
     end
+
+    describe 'URI coercion' do
+      let(:coerce){ coerce_to(:URI) }
+
+      it 'converts strings to URI' do
+        expect(coerce['http://foo']).to eq URI.parse('http://foo')
+      end
+    end
   end
 end
